@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Are You VC-Ready? | Evolution Accelerator</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:   #2C1608;  /* dark adobe */
+    --navy2:  #180D05;  /* deep desert night */
+    --blue:   #2AACBF;  /* Arizona sky / turquoise */
+    --lblue:  #F0DDBA;  /* desert sand */
+    --gold:   #C87530;  /* Arizona copper */
+    --white:  #FFFFFF;
+    --lgray:  #F8F2EA;  /* warm cream */
+    --mgray:  #A09278;  /* warm desert gray */
+    --dark:   #0F0803;  /* deep shadow */
+    --green:  #4E9160;  /* saguaro cactus */
+  }
+
+  html, body {
+    min-height: 100%;
+    font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+    background: var(--navy2);
+    color: var(--white);
+    overflow-x: hidden;
+  }
+
+  .shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 16px 60px;
+  }
+
+  .header {
+    width: 100%;
+    max-width: 720px;
+    padding: 32px 0 0;
+    text-align: center;
+  }
+  .brand { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; margin-bottom: 6px; }
+  .tagline { font-size: 12px; color: var(--mgray); margin-bottom: 28px; }
+
+  .progress-wrap { width: 100%; max-width: 640px; margin: 0 auto 28px; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--mgray); margin-bottom: 8px; }
+  .progress-track { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.5s ease; }
+
+  .card {
+    width: 100%;
+    max-width: 640px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-top: 3px solid var(--gold);
+    border-radius: 8px;
+    padding: 36px 40px 32px;
+    animation: fadeSlideIn 0.4s ease forwards;
+  }
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-number { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; margin-bottom: 12px; }
+  .q-text { font-size: 21px; font-weight: 700; color: var(--white); line-height: 1.3; margin-bottom: 10px; }
+  .q-sub { font-size: 13px; color: var(--mgray); margin-bottom: 22px; line-height: 1.5; }
+
+  .answers { display: flex; flex-direction: column; gap: 12px; }
+  .answer-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+    padding: 15px 18px;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: all 0.2s ease;
+    color: var(--white);
+    font-size: 14px;
+    font-family: inherit;
+    width: 100%;
+  }
+  .answer-btn:hover { background: rgba(46,117,182,0.25); border-color: var(--blue); transform: translateX(4px); }
+  .answer-btn.selected { background: rgba(201,168,76,0.18); border-color: var(--gold); }
+  .answer-btn.selected .answer-letter { background: var(--gold); color: var(--navy2); }
+  .answer-letter {
+    width: 28px; height: 28px; min-width: 28px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+    transition: all 0.2s ease;
+  }
+
+  .nav { display: flex; justify-content: flex-end; margin-top: 24px; }
+  .btn-next {
+    background: var(--gold); color: var(--navy2); font-weight: 700; font-size: 14px;
+    border: none; border-radius: 6px; padding: 13px 28px; cursor: pointer;
+    transition: all 0.2s ease; font-family: inherit;
+  }
+  .btn-next:hover { background: #d9b85a; transform: translateY(-1px); }
+  .btn-next:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+  /* Intro */
+  .intro-screen { width: 100%; max-width: 640px; text-align: center; }
+  .intro-screen h1 { font-size: 34px; font-weight: 800; color: var(--white); margin-bottom: 14px; line-height: 1.2; }
+  .intro-screen h1 span { color: var(--gold); }
+  .intro-screen p { font-size: 15px; color: var(--lblue); line-height: 1.6; margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto; }
+  .intro-stats { display: flex; justify-content: center; gap: 20px; margin-bottom: 36px; flex-wrap: wrap; }
+  .intro-stat {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    border-top: 3px solid var(--blue); border-radius: 6px; padding: 18px 22px; min-width: 145px; text-align: center;
+  }
+  .intro-stat .num { font-size: 26px; font-weight: 800; color: var(--gold); }
+  .intro-stat .lbl { font-size: 12px; color: var(--mgray); margin-top: 4px; line-height: 1.4; }
+  .btn-start {
+    background: var(--gold); color: var(--navy2); font-weight: 800; font-size: 16px;
+    border: none; border-radius: 6px; padding: 16px 48px; cursor: pointer;
+    transition: all 0.2s ease; font-family: inherit;
+  }
+  .btn-start:hover { background: #d9b85a; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(201,168,76,0.3); }
+  .time-note { font-size: 12px; color: var(--mgray); margin-top: 14px; }
+
+  /* Results */
+  .result-screen { width: 100%; max-width: 640px; animation: fadeSlideIn 0.5s ease forwards; }
+  .result-badge { text-align: center; margin-bottom: 28px; }
+  .result-icon {
+    width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; font-weight: 800; border: 3px solid;
+  }
+  .result-tier { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  .result-title { font-size: 28px; font-weight: 800; color: var(--white); line-height: 1.2; margin-bottom: 10px; }
+  .result-sub { font-size: 14px; color: var(--lblue); line-height: 1.6; max-width: 520px; margin: 0 auto; }
+
+  .result-card {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px; padding: 26px 30px; margin-bottom: 16px;
+  }
+  .result-card h3 { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+
+  .score-bar-wrap { margin-bottom: 18px; }
+  .score-bar-label { display: flex; justify-content: space-between; font-size: 13px; color: var(--mgray); margin-bottom: 6px; }
+  .score-bar-track { width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
+  .score-bar-fill { height: 100%; border-radius: 4px; transition: width 1.1s ease 0.2s; }
+
+  .cat-pills { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+  .cat-pill {
+    display: flex; align-items: center; gap: 7px;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px; padding: 5px 12px; font-size: 12px; color: var(--lblue);
+  }
+  .cat-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  .what-it-means { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .what-it-means li { display: flex; align-items: flex-start; gap: 12px; font-size: 14px; color: var(--lblue); line-height: 1.5; }
+  .check { width: 20px; height: 20px; min-width: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; margin-top: 1px; }
+
+  .next-steps { display: flex; flex-direction: column; gap: 10px; }
+  .next-step { display: flex; align-items: center; gap: 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 13px 16px; }
+  .step-num { width: 36px; height: 36px; min-width: 36px; border-radius: 6px; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: var(--white); }
+  .step-text { font-size: 14px; color: var(--white); line-height: 1.4; }
+  .step-text strong { color: var(--gold); }
+
+  .btn-retake {
+    background: transparent; border: 1px solid rgba(255,255,255,0.15); color: var(--mgray);
+    font-size: 13px; border-radius: 6px; padding: 10px 22px; cursor: pointer;
+    font-family: inherit; margin: 16px auto 0; display: block; transition: all 0.2s ease;
+  }
+  .btn-retake:hover { border-color: rgba(255,255,255,0.3); color: var(--white); }
+
+  .footer { text-align: center; font-size: 11px; color: var(--mgray); padding: 32px 0 0; opacity: 0.5; }
+  .hidden { display: none !important; }
+
+  @media (max-width: 560px) {
+    .card { padding: 24px 18px 20px; }
+    .q-text { font-size: 17px; }
+    .intro-screen h1 { font-size: 24px; }
+    .intro-stats { gap: 10px; }
+    .result-card { padding: 18px; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="header">
+    <div class="brand">Evolution Accelerator</div>
+    <div class="tagline">marketing@evolutionaccelerator.co</div>
+  </div>
+
+  <!-- INTRO -->
+  <div class="intro-screen" id="introScreen">
+    <div style="margin-bottom:32px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:16px;">
+        Greater Phoenix Top Producers &bull; March 2026
+      </div>
+      <h1>Are You <span>VC&#8209;Ready?</span></h1>
+      <p>You have been closing deals, building relationships, and reading the market better than anyone. But are you sitting on more than you think? Find out in 2 minutes.</p>
+    </div>
+    <div class="intro-stats">
+      <div class="intro-stat">
+        <div class="num">$330B+</div>
+        <div class="lbl">raised by US VC<br>funds in 2024</div>
+      </div>
+      <div class="intro-stat">
+        <div class="num">&lt;1%</div>
+        <div class="lbl">of investors have<br>access to VC deals</div>
+      </div>
+      <div class="intro-stat">
+        <div class="num">87%</div>
+        <div class="lbl">of top agents have<br>$500K+ investable</div>
+      </div>
+    </div>
+    <button class="btn-start" onclick="startQuiz()">Let's Find Out &rarr;</button>
+    <div class="time-note">10 quick questions &bull; No wrong answers &bull; ~2 minutes</div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quizScreen" class="hidden" style="width:100%;max-width:640px;">
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="progressLabel">Question 1 of 10</span>
+        <span id="progressPct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+    </div>
+    <div class="card" id="questionCard"></div>
+    <div class="nav">
+      <button class="btn-next" id="btnNext" onclick="nextQuestion()" disabled>Next &rarr;</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="resultScreen" class="hidden result-screen"></div>
+
+  <div class="footer">&copy; 2026 Evolution Accelerator &bull; Confidential &bull; Greater Phoenix Top Producers</div>
+</div>
+
+<script>
+var questions = [
+  {
+    category: "Money Talk",
+    text: "Real talk -- what did you clear in commissions in your best recent year?",
+    sub: "This is a judgment-free zone. We are just figuring out your playing field.",
+    answers: [
+      { text: "Honestly, under $200K -- still building",          pts: 0 },
+      { text: "Solid $200K to $500K range",                       pts: 1 },
+      { text: "Good year -- $500K to $1M",                        pts: 2 },
+      { text: "Over $1M. It was a great year.",                   pts: 3 }
+    ]
+  },
+  {
+    category: "Money Talk",
+    text: "Outside of real estate, how much capital do you have just sitting there?",
+    sub: "Savings, brokerage accounts, cash -- anything not tied up in a property.",
+    answers: [
+      { text: "Under $50K -- most of it is in the business",       pts: 0 },
+      { text: "Somewhere between $50K and $250K",                  pts: 1 },
+      { text: "A solid $250K to $500K",                            pts: 2 },
+      { text: "$500K or more -- I have been stacking",             pts: 3 }
+    ]
+  },
+  {
+    category: "Money Talk",
+    text: "When a big commission check hits, what usually happens to it?",
+    sub: "No judgment here -- just want to understand your financial habits.",
+    answers: [
+      { text: "Life is expensive -- most of it goes back out",             pts: 0 },
+      { text: "I save some of it when I remember to",                      pts: 1 },
+      { text: "I put a real chunk away every year, pretty consistently",   pts: 2 },
+      { text: "I run lean and I build capital fast -- it is a system",     pts: 3 }
+    ]
+  },
+  {
+    category: "Your Network",
+    text: "How many high-net-worth clients -- executives, investors, business owners -- do you work with in a year?",
+    sub: "Your rolodex might be worth more than you think to a VC firm.",
+    answers: [
+      { text: "Honestly just a handful -- maybe 1 to 5",           pts: 0 },
+      { text: "A decent amount -- somewhere in the 5 to 15 range", pts: 1 },
+      { text: "Plenty -- 15 to 30 a year easily",                  pts: 2 },
+      { text: "30 or more. High net worth is basically my whole market.", pts: 3 }
+    ]
+  },
+  {
+    category: "Your Network",
+    text: "How tight are you with the developer and builder crowd in Phoenix?",
+    sub: "VC firms love agents who are already inside the development community.",
+    answers: [
+      { text: "Not really my world -- mostly residential buyers and sellers", pts: 0 },
+      { text: "I know a few I could call up",                               pts: 1 },
+      { text: "Pretty strong -- I work with developers on a regular basis", pts: 2 },
+      { text: "They call me before anything hits the market",               pts: 3 }
+    ]
+  },
+  {
+    category: "Market Intel",
+    text: "How early do you usually know where the Phoenix market is actually heading?",
+    sub: "The stuff you know before it shows up in any report.",
+    answers: [
+      { text: "I know my neighborhoods -- not much beyond that",                pts: 0 },
+      { text: "I can spot a shift when it starts happening",                    pts: 1 },
+      { text: "I usually know which corridors are moving before anyone else",   pts: 2 },
+      { text: "Builders and investors call me specifically for this intel",      pts: 3 }
+    ]
+  },
+  {
+    category: "Market Intel",
+    text: "Have you heard of PropTech -- the wave of startups being funded to transform real estate?",
+    sub: "Global VC investment in PropTech hit $29 billion in 2024 alone.",
+    answers: [
+      { text: "Nope, first I am hearing about it",                              pts: 0 },
+      { text: "Yeah I have heard the term -- do not follow it closely though",  pts: 1 },
+      { text: "I know some of the platforms and what they are trying to do",    pts: 2 },
+      { text: "Absolutely -- I track what is getting funded and why",           pts: 3 }
+    ]
+  },
+  {
+    category: "Your Mindset",
+    text: "How do you feel about parking money somewhere you cannot touch for 7 to 10 years?",
+    sub: "That is the typical runway for a VC fund. Sound familiar? It should -- so is real estate.",
+    answers: [
+      { text: "Hard pass -- I like being able to access my money",                       pts: 0 },
+      { text: "I could do it if the return potential is genuinely worth it",             pts: 1 },
+      { text: "Fine by me -- I already have assets locked up",                           pts: 2 },
+      { text: "Totally comfortable -- real estate already trained me to be patient",     pts: 3 }
+    ]
+  },
+  {
+    category: "Your Mindset",
+    text: "Have you put money into anything outside of real estate in the last few years?",
+    sub: "Stocks, retirement funds, a friend's startup -- anything counts.",
+    answers: [
+      { text: "No -- real estate is the only investment I trust",         pts: 0 },
+      { text: "A little -- some index funds or a 401K",                   pts: 1 },
+      { text: "Yes -- I have a diversified portfolio beyond real estate", pts: 2 },
+      { text: "Yes -- including private deals, funds, or alternative assets", pts: 3 }
+    ]
+  },
+  {
+    category: "Your Mindset",
+    text: "Five years from now, what does winning actually look like for you?",
+    answers: [
+      { text: "Protect what I have and keep closing deals",                   pts: 0 },
+      { text: "Get out of the all-eggs-in-one-basket situation",              pts: 1 },
+      { text: "Build income streams that work even when I am not working",    pts: 2 },
+      { text: "Own pieces of things -- real wealth, not just commissions",    pts: 3 }
+    ]
+  }
+];
+
+var tiers = [
+  {
+    min: 0, max: 9,
+    color: "#2AACBF",
+    label: "Getting Established",
+    title: "The Signal Is Your First Move",
+    sub: "You are building the foundation that VC requires -- and that is not a bad place to be. The smartest next step is plugging into daily market intelligence so that when the capital is ready, you already know exactly where to put it.",
+    means: [
+      "Your capital base is growing -- now is the perfect time to learn the landscape",
+      "Plugging into The Signal gets you tracking VC-adjacent activity every morning",
+      "Most successful LPs spent a year or two learning before they ever wrote a check"
+    ],
+    steps: [
+      { n: "01", text: "<strong>Reply ACCESS</strong> to get your free daily Signal briefing started" },
+      { n: "02", text: "Book a no-pressure <strong>45-minute VC education call</strong> with Sean" },
+      { n: "03", text: "Retake this quiz in 6 months -- you will be surprised how much your score moves" }
+    ]
+  },
+  {
+    min: 10, max: 17,
+    color: "#C87530",
+    label: "Signal Worthy",
+    title: "You Are Closer Than You Think",
+    sub: "You have real capital, a real network, and the kind of patience that most investors never develop. You are not quite in deal-flow territory yet -- but honestly, one good conversation changes that fast.",
+    means: [
+      "Your income and assets already put you in LP minimum range",
+      "The HNW relationships you have built are a genuine asset to any VC firm",
+      "One private session with Sean will make the path concrete and very clear"
+    ],
+    steps: [
+      { n: "01", text: "<strong>Reply ACCESS</strong> to get your personalized daily Signal briefing" },
+      { n: "02", text: "Schedule your <strong>private 45-minute VC intro call</strong> with Sean" },
+      { n: "03", text: "<strong>See live deal flow</strong> -- zero obligation, just real exposure to what is out there" }
+    ]
+  },
+  {
+    min: 18, max: 24,
+    color: "#4E9160",
+    label: "LP Ready",
+    title: "You Are Ready to Be a Limited Partner",
+    sub: "Your capital, your network, and your market intelligence all point in the same direction. A professionally managed fund can put your assets to work in high-growth companies -- and it requires almost none of your time.",
+    means: [
+      "Your capital already meets the minimum for most emerging fund managers",
+      "Your HNW relationships are exactly the deal pipeline VC funds are actively hunting for",
+      "Your comfort with illiquid assets is genuinely rare -- and it is a serious advantage here"
+    ],
+    steps: [
+      { n: "01", text: "<strong>Reply ACCESS</strong> -- get your Signal running and lock in a call this week" },
+      { n: "02", text: "Sit down with Sean and review <strong>actual fund terms side by side</strong>" },
+      { n: "03", text: "Make your first LP commitment <strong>on your terms and at your pace</strong>" }
+    ]
+  },
+  {
+    min: 25, max: 30,
+    color: "#C87530",
+    label: "Co-Investor Material",
+    title: "You Are Deal-Flow Ready",
+    sub: "You are not just a passive check writer -- you are a strategic asset. Your market intelligence, your network, and your capital make you exactly who VC funds go out of their way to recruit. Let us get you into live deals.",
+    means: [
+      "Your local intel is worth significantly more to a VC than you probably realize",
+      "Co-investors like you actually influence which deals get funded in this market",
+      "You have the capital, the patience, and the network to go deal by deal right now"
+    ],
+    steps: [
+      { n: "01", text: "<strong>Reply ACCESS right now</strong> -- we want to put live deal flow in front of you" },
+      { n: "02", text: "Private <strong>co-investor briefing</strong> with Sean -- real companies, real numbers, no fluff" },
+      { n: "03", text: "Pick your first deal -- typically <strong>$25K to $100K</strong> per opportunity" }
+    ]
+  }
+];
+
+var current = 0;
+var answers = [];
+for (var i = 0; i < questions.length; i++) { answers.push(null); }
+var catColors = { "Money Talk": "#2AACBF", "Your Network": "#C87530", "Market Intel": "#4E9160", "Your Mindset": "#C0532A" };
+var letters = ["A","B","C","D"];
+
+function startQuiz() {
+  document.getElementById("introScreen").classList.add("hidden");
+  document.getElementById("quizScreen").classList.remove("hidden");
+  renderQuestion();
+}
+
+function renderQuestion() {
+  var q = questions[current];
+  var total = questions.length;
+  var pct = Math.round((current / total) * 100);
+  document.getElementById("progressLabel").textContent = "Question " + (current + 1) + " of " + total;
+  document.getElementById("progressPct").textContent = pct + "%";
+  document.getElementById("progressFill").style.width = pct + "%";
+  document.getElementById("btnNext").disabled = (answers[current] === null);
+  document.getElementById("btnNext").textContent = (current === total - 1) ? "See My Results \u2192" : "Next \u2192";
+
+  var card = document.getElementById("questionCard");
+  card.style.animation = "none";
+  void card.offsetHeight;
+  card.style.animation = "fadeSlideIn 0.4s ease forwards";
+
+  var html = '<div class="q-number">Question ' + (current + 1) + ' &bull; ' + q.category + '</div>';
+  html += '<div class="q-text">' + q.text + '</div>';
+  if (q.sub) { html += '<div class="q-sub">' + q.sub + '</div>'; }
+  html += '<div class="answers">';
+  for (var i = 0; i < q.answers.length; i++) {
+    var sel = (answers[current] === i) ? "selected" : "";
+    var lStyle = (answers[current] === i) ? ' style="background:var(--gold);color:var(--navy2);"' : "";
+    html += '<button class="answer-btn ' + sel + '" onclick="selectAnswer(' + i + ')">';
+    html += '<span class="answer-letter"' + lStyle + '>' + letters[i] + '</span>';
+    html += '<span>' + q.answers[i].text + '</span>';
+    html += '</button>';
+  }
+  html += '</div>';
+  card.innerHTML = html;
+}
+
+function selectAnswer(idx) {
+  answers[current] = idx;
+  var btns = document.querySelectorAll(".answer-btn");
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].classList.toggle("selected", i === idx);
+    var ltr = btns[i].querySelector(".answer-letter");
+    ltr.style.background = (i === idx) ? "var(--gold)" : "";
+    ltr.style.color = (i === idx) ? "var(--navy2)" : "";
+  }
+  document.getElementById("btnNext").disabled = false;
+  setTimeout(function() { if (answers[current] !== null) { nextQuestion(); } }, 480);
+}
+
+function nextQuestion() {
+  if (answers[current] === null) return;
+  current++;
+  if (current >= questions.length) { showResults(); } else { renderQuestion(); }
+}
+
+function calcScores() {
+  var total = 0;
+  var byCategory = {};
+  for (var i = 0; i < questions.length; i++) {
+    if (answers[i] === null) continue;
+    var pts = questions[i].answers[answers[i]].pts;
+    total += pts;
+    var cat = questions[i].category;
+    if (!byCategory[cat]) { byCategory[cat] = { score: 0, max: 0 }; }
+    byCategory[cat].score += pts;
+    byCategory[cat].max += 3;
+  }
+  return { total: total, byCategory: byCategory };
+}
+
+function getTier(total) {
+  for (var i = 0; i < tiers.length; i++) {
+    if (total >= tiers[i].min && total <= tiers[i].max) return tiers[i];
+  }
+  return tiers[tiers.length - 1];
+}
+
+function showResults() {
+  document.getElementById("quizScreen").classList.add("hidden");
+  var rs = document.getElementById("resultScreen");
+  rs.classList.remove("hidden");
+
+  var sc = calcScores();
+  var total = sc.total;
+  var byCategory = sc.byCategory;
+  var maxTotal = questions.length * 3;
+  var tier = getTier(total);
+  var pct = Math.round((total / maxTotal) * 100);
+
+  var barHtml = '<div class="score-bar-wrap">';
+  barHtml += '<div class="score-bar-label"><span>Your VC Readiness Score</span><span style="color:var(--gold);font-weight:700;">' + total + ' / ' + maxTotal + ' points</span></div>';
+  barHtml += '<div class="score-bar-track"><div class="score-bar-fill" id="mainScoreBar" style="width:0%;background:' + tier.color + '"></div></div>';
+  barHtml += '</div><div class="cat-pills">';
+  for (var cat in byCategory) {
+    var d = byCategory[cat];
+    barHtml += '<div class="cat-pill"><div class="cat-dot" style="background:' + (catColors[cat] || "#C0532A") + '"></div>' + cat + ': ' + d.score + '/' + d.max + '</div>';
+  }
+  barHtml += '</div>';
+
+  var meansHtml = "";
+  for (var m = 0; m < tier.means.length; m++) {
+    meansHtml += '<li><span class="check" style="background:' + tier.color + '20;color:' + tier.color + ';">&#10003;</span>' + tier.means[m] + '</li>';
+  }
+
+  var stepsHtml = "";
+  for (var s = 0; s < tier.steps.length; s++) {
+    stepsHtml += '<div class="next-step"><div class="step-num">' + tier.steps[s].n + '</div><div class="step-text">' + tier.steps[s].text + '</div></div>';
+  }
+
+  rs.innerHTML =
+    '<div class="result-badge">' +
+      '<div class="result-icon" style="background:' + tier.color + '18;border-color:' + tier.color + ';color:' + tier.color + ';">' + pct + '%</div>' +
+      '<div class="result-tier" style="color:' + tier.color + ';">' + tier.label + '</div>' +
+      '<div class="result-title">' + tier.title + '</div>' +
+      '<div class="result-sub">' + tier.sub + '</div>' +
+    '</div>' +
+    '<div class="result-card"><h3>Your Score Breakdown</h3>' + barHtml + '</div>' +
+    '<div class="result-card"><h3>What This Means for You</h3><ul class="what-it-means">' + meansHtml + '</ul></div>' +
+    '<div class="result-card"><h3>Your Recommended Next Steps</h3><div class="next-steps">' + stepsHtml + '</div></div>' +
+    '<button class="btn-retake" onclick="retakeQuiz()">&#8635; Retake the quiz</button>';
+
+  setTimeout(function() {
+    var bar = document.getElementById("mainScoreBar");
+    if (bar) { bar.style.width = pct + "%"; }
+  }, 150);
+  rs.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function retakeQuiz() {
+  current = 0;
+  for (var i = 0; i < answers.length; i++) { answers[i] = null; }
+  document.getElementById("resultScreen").classList.add("hidden");
+  document.getElementById("quizScreen").classList.remove("hidden");
+  renderQuestion();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+</script>
+</body>
+</html>
